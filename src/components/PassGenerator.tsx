@@ -1,26 +1,15 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
-import { QRCodeSVG } from 'qrcode.react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Download, RefreshCcw, Image as ImageIcon, Type, QrCode, User, Settings, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle } from 'lucide-react';
+import { Upload, Download, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-// Default placeholder image for background (simulating the space theme)
-const DEFAULT_BG = "linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #db2777 100%)";
-
-// Simple SVG data URI for the "NINO" logo in the QR code
-const NINO_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' width='40' height='20'%3E%3Crect width='40' height='20' rx='4' fill='%231a103c'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold' font-size='10'%3ENINO%3C/text%3E%3C/svg%3E";
 
 interface PassData {
   userType: string;
   userIntro: string;
   userNickname: string;
   userSubtitle: string;
-  qrUrl: string;
-  qrType: 'url' | 'image';
-  qrImageUrl: string | null;
   avatarUrl: string | null;
-  backgroundUrl: string | null;
   cardPositionX: number;
   cardPositionY: number;
   cardScale: number;
@@ -31,11 +20,7 @@ const INITIAL_DATA: PassData = {
   userIntro: "AI Edgelab founder",
   userNickname: "Rebecca",
   userSubtitle: "AI/web3公益技术顾问",
-  qrUrl: "https://herstory.framer.ai/",
-  qrType: 'url',
-  qrImageUrl: null,
   avatarUrl: null,
-  backgroundUrl: null,
   cardPositionX: 88, // Percentage
   cardPositionY: 100, // Percentage
   cardScale: 0.6,
@@ -47,10 +32,6 @@ const TRANSLATIONS = {
   zh: {
     title: "通行证生成器",
     subtitle: "自定义您的 Solidity Bootcamp 入场通行证。",
-    background: "背景图片",
-    uploadTemplate: "上传海报模板",
-    uploadTip: "提示：上传“Solidity Bootcamp”海报图片作为背景。",
-    resetBackground: "重置背景",
     userInfo: "用户信息",
     profilePhoto: "头像",
     clickToUpload: "点击上传",
@@ -58,17 +39,6 @@ const TRANSLATIONS = {
     introTitle: "介绍 / 头衔",
     nickname: "昵称",
     subtitleDesc: "副标题 / 描述",
-    qrCode: "二维码",
-    qrMode: "模式",
-    modeUrl: "链接生成",
-    modeImage: "上传图片",
-    uploadQrTip: "点击上传二维码图片",
-    targetUrl: "目标链接",
-    layoutAdjustment: "布局调整",
-    resetLayout: "重置布局",
-    verticalPos: "垂直位置",
-    horizontalPos: "水平位置",
-    scale: "缩放",
     shareSocial: "分享到社交媒体",
     captionLabel: "文案 (分享时自动复制)",
     shareX: "X / Twitter",
@@ -86,10 +56,6 @@ const TRANSLATIONS = {
   en: {
     title: "Pass Generator",
     subtitle: "Customize your Solidity Bootcamp onboard pass.",
-    background: "Background",
-    uploadTemplate: "Upload Poster Template",
-    uploadTip: "Tip: Upload the \"Solidity Bootcamp\" poster image to use as the background.",
-    resetBackground: "Reset Background",
     userInfo: "User Info",
     profilePhoto: "Profile Photo",
     clickToUpload: "Click to upload",
@@ -97,17 +63,6 @@ const TRANSLATIONS = {
     introTitle: "Intro / Title",
     nickname: "Nickname",
     subtitleDesc: "Subtitle / Description",
-    qrCode: "QR Code",
-    qrMode: "Mode",
-    modeUrl: "Link URL",
-    modeImage: "Custom Image",
-    uploadQrTip: "Click to upload QR image",
-    targetUrl: "Target URL",
-    layoutAdjustment: "Layout Adjustment",
-    resetLayout: "Reset Layout",
-    verticalPos: "Vertical Position",
-    horizontalPos: "Horizontal Position",
-    scale: "Scale",
     shareSocial: "Share to Social",
     captionLabel: "Caption (Auto-copied on share)",
     shareX: "X / Twitter",
@@ -177,48 +132,11 @@ export default function PassGenerator() {
     }
   }, []);
 
-  const onDropBackground = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setData(prev => ({ ...prev, backgroundUrl: url }));
-    }
-  }, []);
-
-  const onDropQr = useCallback((acceptedFiles: File[]) => {
-    const file = acceptedFiles[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setData(prev => ({ ...prev, qrImageUrl: url }));
-    }
-  }, []);
-
   const { getRootProps: getAvatarRootProps, getInputProps: getAvatarInputProps } = useDropzone({
     onDrop: onDropAvatar,
     accept: { 'image/*': [] as string[] },
     multiple: false
   } as any);
-
-  const { getRootProps: getBgRootProps, getInputProps: getBgInputProps } = useDropzone({
-    onDrop: onDropBackground,
-    accept: { 'image/*': [] as string[] },
-    multiple: false
-  } as any);
-
-  const { getRootProps: getQrRootProps, getInputProps: getQrInputProps } = useDropzone({
-    onDrop: onDropQr,
-    accept: { 'image/*': [] as string[] },
-    multiple: false
-  } as any);
-
-  const resetPosition = () => {
-    setData(prev => ({
-      ...prev,
-      cardPositionX: 50,
-      cardPositionY: 80,
-      cardScale: 1
-    }));
-  };
 
   const handleShare = async (platform: 'x' | 'instagram' | 'xiaohongshu') => {
     // 1. Auto-download the image first
@@ -273,31 +191,6 @@ export default function PassGenerator() {
           <p>{t.browserWarning}</p>
         </div>
 
-        {/* Background Upload */}
-        <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-            <ImageIcon className="w-4 h-4" /> {t.background}
-          </h2>
-          <div {...getBgRootProps()} className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors group">
-            <input {...getBgInputProps()} />
-            <div className="flex flex-col items-center gap-2 text-slate-500 group-hover:text-indigo-600">
-              <Upload className="w-6 h-6" />
-              <span className="text-xs font-medium">{t.uploadTemplate}</span>
-            </div>
-          </div>
-          <p className="text-[10px] text-slate-400 px-1">
-            {t.uploadTip}
-          </p>
-          {data.backgroundUrl && (
-             <button 
-               onClick={() => setData(prev => ({ ...prev, backgroundUrl: null }))}
-               className="text-xs text-red-500 hover:text-red-700 flex items-center gap-1"
-             >
-               <RefreshCcw className="w-3 h-3" /> {t.resetBackground}
-             </button>
-          )}
-        </div>
-
         {/* User Info Inputs */}
         <div className="space-y-4">
           <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
@@ -324,15 +217,7 @@ export default function PassGenerator() {
           </div>
 
           <div className="space-y-3">
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">{t.userType}</label>
-              <input 
-                type="text" 
-                value={data.userType}
-                onChange={(e) => setData(prev => ({ ...prev, userType: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
+            {/* User Type Input Removed - Fixed to ONBOARD MEMBERSHIP */}
             <div>
               <label className="text-xs font-medium text-slate-500 mb-1 block">{t.introTitle}</label>
               <input 
@@ -363,119 +248,7 @@ export default function PassGenerator() {
           </div>
         </div>
 
-        {/* QR Code */}
-        <div className="space-y-3">
-          <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-            <QrCode className="w-4 h-4" /> {t.qrCode}
-          </h2>
-          
-          {/* Mode Toggle */}
-          <div className="flex bg-slate-100 p-1 rounded-lg">
-            <button
-              onClick={() => setData(prev => ({ ...prev, qrType: 'url' }))}
-              className={cn(
-                "flex-1 py-1.5 text-xs font-medium rounded-md transition-all",
-                data.qrType === 'url' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              )}
-            >
-              {t.modeUrl}
-            </button>
-            <button
-              onClick={() => setData(prev => ({ ...prev, qrType: 'image' }))}
-              className={cn(
-                "flex-1 py-1.5 text-xs font-medium rounded-md transition-all",
-                data.qrType === 'image' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
-              )}
-            >
-              {t.modeImage}
-            </button>
-          </div>
-
-          {data.qrType === 'url' ? (
-            <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">{t.targetUrl}</label>
-              <input 
-                type="text" 
-                value={data.qrUrl}
-                onChange={(e) => setData(prev => ({ ...prev, qrUrl: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-          ) : (
-            <div {...getQrRootProps()} className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors group relative overflow-hidden">
-              <input {...getQrInputProps()} />
-              {data.qrImageUrl ? (
-                <div className="relative z-10">
-                   <img src={data.qrImageUrl} alt="QR" className="w-20 h-20 mx-auto object-contain mb-2 rounded-md bg-white shadow-sm" />
-                   <p className="text-xs text-indigo-600 font-medium">{t.clickToUpload}</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-slate-500 group-hover:text-indigo-600">
-                  <QrCode className="w-6 h-6" />
-                  <span className="text-xs font-medium">{t.uploadQrTip}</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* Positioning */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-              <Settings className="w-4 h-4" /> {t.layoutAdjustment}
-            </h2>
-            <button 
-              onClick={resetPosition}
-              className="text-[10px] text-indigo-600 hover:text-indigo-800 font-medium bg-indigo-50 px-2 py-1 rounded"
-            >
-              {t.resetLayout}
-            </button>
-          </div>
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1 block flex justify-between">
-              <span>{t.verticalPos}</span>
-              <span>{data.cardPositionY}%</span>
-            </label>
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              value={data.cardPositionY}
-              onChange={(e) => setData(prev => ({ ...prev, cardPositionY: parseInt(e.target.value) }))}
-              className="w-full accent-indigo-600"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1 block flex justify-between">
-              <span>{t.horizontalPos}</span>
-              <span>{data.cardPositionX}%</span>
-            </label>
-            <input 
-              type="range" 
-              min="0" 
-              max="100" 
-              value={data.cardPositionX}
-              onChange={(e) => setData(prev => ({ ...prev, cardPositionX: parseInt(e.target.value) }))}
-              className="w-full accent-indigo-600"
-            />
-          </div>
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1 block flex justify-between">
-              <span>{t.scale}</span>
-              <span>{data.cardScale.toFixed(1)}x</span>
-            </label>
-            <input 
-              type="range" 
-              min="0.5" 
-              max="2" 
-              step="0.1"
-              value={data.cardScale}
-              onChange={(e) => setData(prev => ({ ...prev, cardScale: parseFloat(e.target.value) }))}
-              className="w-full accent-indigo-600"
-            />
-          </div>
-        </div>
+        {/* Positioning Section Removed - Fixed Layout */}
 
         {/* Social Share */}
         <div className="space-y-3 border-t border-slate-100 pt-4">
@@ -543,33 +316,12 @@ export default function PassGenerator() {
                 className="w-full h-full relative bg-black"
              >
                 {/* Background Layer - Using img tag for better html-to-image support */}
-                {data.backgroundUrl ? (
-                  <img 
-                    src={data.backgroundUrl} 
-                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                    alt="Background"
-                    crossOrigin="anonymous"
-                  />
-                ) : (
-                  <div 
-                    className="absolute inset-0 w-full h-full pointer-events-none"
-                    style={{ background: DEFAULT_BG }}
-                  />
-                )}
-
-                {/* Fallback content if no background is uploaded */}
-                {!data.backgroundUrl && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-                    <div className="text-center text-white/20">
-                      <h1 className="text-6xl font-black font-serif mb-4 whitespace-pre-line">{t.uploadPlaceholderTitle}</h1>
-                      <p className="text-xl">{t.uploadPlaceholderDesc}</p>
-                    </div>
-                    {/* Decorative stars */}
-                    <div className="absolute top-10 left-10 w-2 h-2 bg-white rounded-full opacity-50 animate-pulse"></div>
-                    <div className="absolute top-20 right-40 w-3 h-3 bg-pink-400 rounded-full opacity-60"></div>
-                    <div className="absolute bottom-40 left-20 w-4 h-4 bg-yellow-300 rounded-full opacity-40"></div>
-                  </div>
-                )}
+                <img 
+                  src="/bg.jpg" 
+                  className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                  alt="Background"
+                  crossOrigin="anonymous"
+                />
 
                 {/* The Card */}
                 <div 
@@ -647,24 +399,7 @@ function TicketCard({ data, t }: { data: PassData, t: any }) {
           {t.scanToJoin}
         </p>
         <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-          {data.qrType === 'image' && data.qrImageUrl ? (
-            <img src={data.qrImageUrl} alt="QR Code" className="w-[100px] h-[100px] object-cover" />
-          ) : (
-            <QRCodeSVG 
-              value={data.qrUrl} 
-              size={100}
-              level="H"
-              fgColor="#1a103c"
-              imageSettings={{
-                src: NINO_LOGO,
-                x: undefined,
-                y: undefined,
-                height: 20,
-                width: 30,
-                excavate: true,
-              }}
-            />
-          )}
+          <img src="/QR.jpg" alt="QR Code" className="w-[100px] h-[100px] object-contain" />
         </div>
       </div>
 
