@@ -50,6 +50,30 @@ A React-based tool designed to generate custom onboard passes for the Solidity B
    npm run build
    ```
 
+## Deployment
+
+### Vercel (Recommended)
+
+This project is fully compatible with Vercel. You can deploy it with zero configuration.
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-repo%2Fsolidity-bootcamp-pass)
+
+1. Push your code to a Git repository (GitHub, GitLab, Bitbucket).
+2. Import the project into Vercel.
+3. Vercel will automatically detect Vite and configure the build settings:
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Click **Deploy**.
+
+### Manual Deployment
+
+Since this is a static site, you can build it locally and host the `dist` folder on any static hosting service (Netlify, GitHub Pages, Cloudflare Pages, etc.).
+
+```bash
+npm run build
+# The 'dist' folder is now ready to be deployed
+```
+
 ## Usage
 
 1. **Upload Background**: Drag and drop or click to upload the official Solidity Bootcamp poster as the background.
