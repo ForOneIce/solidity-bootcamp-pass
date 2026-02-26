@@ -2,15 +2,11 @@ import React, { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { QRCodeSVG } from 'qrcode.react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Download, RefreshCcw, Image as ImageIcon, Type, QrCode, User, Settings, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, Loader2 } from 'lucide-react';
+import { Upload, Download, RefreshCcw, Image as ImageIcon, Type, QrCode, User, Settings, Share2, Copy, Twitter, Instagram, ExternalLink, Languages } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { v4 as uuidv4 } from 'uuid';
 
 // Default placeholder image for background (simulating the space theme)
-// Using a CSS gradient instead of an image URL to avoid CORS issues during export
-const DEFAULT_BG_STYLE = {
-  background: "linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #db2777 100%)",
-};
+const DEFAULT_BG = "linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #db2777 100%)";
 
 // Simple SVG data URI for the "NINO" logo in the QR code
 const NINO_LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 20' width='40' height='20'%3E%3Crect width='40' height='20' rx='4' fill='%231a103c'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='sans-serif' font-weight='bold' font-size='10'%3ENINO%3C/text%3E%3C/svg%3E";
@@ -121,7 +117,6 @@ export default function PassGenerator() {
   const [data, setData] = useState<PassData>(INITIAL_DATA);
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
   const [shareText, setShareText] = useState(TRANSLATIONS['zh'].defaultShareText);
 
   const t = TRANSLATIONS[lang];
@@ -139,18 +134,13 @@ export default function PassGenerator() {
     if (previewRef.current) {
       setIsDownloading(true);
       try {
-        const dataUrl = await toPng(previewRef.current, { 
-          cacheBust: true, 
-          pixelRatio: 2,
-          skipAutoScale: true,
-        });
+        const dataUrl = await toPng(previewRef.current, { cacheBust: true, pixelRatio: 2 });
         const link = document.createElement('a');
         link.download = `solidity-bootcamp-pass-${data.userNickname}.png`;
         link.href = dataUrl;
         link.click();
       } catch (err) {
         console.error('Failed to download image', err);
-        alert('Download failed. Please try again.');
       } finally {
         setIsDownloading(false);
       }
@@ -195,70 +185,31 @@ export default function PassGenerator() {
   };
 
   const handleShare = async (platform: 'x' | 'instagram' | 'xiaohongshu') => {
+    // 1. Auto-download the image first
+    await handleDownload();
+
     let text = shareText;
     let url = '';
-    let shareUrl = '';
 
-    // If sharing to X, we want to generate a Twitter Card
-    if (platform === 'x' && previewRef.current) {
-      setIsSharing(true);
-      try {
-        // 1. Generate Image
-        const dataUrl = await toPng(previewRef.current, { 
-          cacheBust: true, 
-          pixelRatio: 2,
-          skipAutoScale: true,
-        });
-        
-        // 2. Upload to Server
-        const id = uuidv4();
-        const response = await fetch('/api/share', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id,
-            nickname: data.userNickname,
-            imageData: dataUrl
-          })
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Server response:', response.status, response.statusText, errorText);
-          throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
-        }
-
-        // 3. Construct Share URL
-        // Use window.location.origin to get the current app URL
-        shareUrl = `${window.location.origin}/share/${id}`;
-        
-        text += `\n@HerstoryWeb3`;
-        // Include the shareUrl in the tweet text or as the url parameter
-        url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
-        
-        window.open(url, '_blank');
-      } catch (error) {
-        console.error('Share failed', error);
-        alert('Failed to generate share card. Please try again.');
-      } finally {
-        setIsSharing(false);
-      }
-      return;
-    }
-
-    // Platform specific mentions for others
-    if (platform === 'instagram') {
+    // Platform specific mentions
+    if (platform === 'x') {
+      text += `\n@HerstoryWeb3`;
+      url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+    } else if (platform === 'instagram') {
       text += `\n@herstory_web3`;
       url = `https://www.instagram.com/herstory_web3/`;
     } else if (platform === 'xiaohongshu') {
       text += `\n小红书号：HerstoryWeb3`;
-      url = `https://www.xiaohongshu.com/`; 
+      url = `https://www.xiaohongshu.com/`; // No direct web intent
     }
 
     // Copy text to clipboard
     navigator.clipboard.writeText(text).then(() => {
-      alert(`${t.shareAlert} ${platform === 'x' ? 'X (Twitter)' : platform === 'xiaohongshu' ? 'Xiaohongshu' : 'Instagram'}...`);
-      window.open(url, '_blank');
+      // Small delay to allow the download to start/finish visually
+      setTimeout(() => {
+        alert(`${t.shareAlert} ${platform === 'x' ? 'X (Twitter)' : platform === 'xiaohongshu' ? 'Xiaohongshu' : 'Instagram'}...`);
+        window.open(url, '_blank');
+      }, 500);
     });
   };
 
@@ -460,10 +411,9 @@ export default function PassGenerator() {
           <div className="grid grid-cols-3 gap-2">
             <button 
               onClick={() => handleShare('x')}
-              disabled={isSharing}
-              className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-black text-white hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl bg-black text-white hover:bg-slate-800 transition-colors"
             >
-              {isSharing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Twitter className="w-4 h-4" />}
+              <Twitter className="w-4 h-4" />
               <span className="text-[10px] font-medium">{t.shareX}</span>
             </button>
             <button 
@@ -510,7 +460,7 @@ export default function PassGenerator() {
                 ref={previewRef}
                 className="w-full h-full relative"
                 style={{
-                  ...(data.backgroundUrl ? { backgroundImage: `url(${data.backgroundUrl})` } : DEFAULT_BG_STYLE),
+                  background: data.backgroundUrl ? `url(${data.backgroundUrl})` : DEFAULT_BG,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
                 }}
