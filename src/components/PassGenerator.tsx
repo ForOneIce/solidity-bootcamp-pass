@@ -80,7 +80,7 @@ const TRANSLATIONS = {
     uploadPlaceholderTitle: "Solidity\nBootcamp",
     uploadPlaceholderDesc: "上传原始海报以获得最佳效果",
     shareAlert: "文案已复制！正在打开",
-    defaultShareText: `来看看我的 Solidity Bootcamp 入场通行证！🚀\n\n${SOCIAL_HASHTAGS}`
+    defaultShareText: `来看看我的 Herstory Solidity Bootcamp 入场通行证！🚀\n\n${SOCIAL_HASHTAGS}`
   },
   en: {
     title: "Pass Generator",
@@ -146,8 +146,15 @@ export default function PassGenerator() {
     if (previewRef.current) {
       setIsDownloading(true);
       try {
+        // Wait for fonts to be ready
+        await document.fonts.ready;
+        
         // Base size is 800x600. pixelRatio: 5 results in 4000x3000 output.
-        const dataUrl = await toPng(previewRef.current, { cacheBust: true, pixelRatio: 5 });
+        // cacheBust: true breaks blob: URLs, so we remove it.
+        const dataUrl = await toPng(previewRef.current, { 
+          pixelRatio: 5,
+          skipAutoScale: true
+        });
         const link = document.createElement('a');
         link.download = `solidity-bootcamp-pass-${data.userNickname}.png`;
         link.href = dataUrl;
@@ -525,14 +532,23 @@ export default function PassGenerator() {
              {/* This is the capture area */}
              <div 
                 ref={previewRef}
-                className="w-full h-full relative"
-                style={{
-                  backgroundImage: data.backgroundUrl ? `url(${data.backgroundUrl})` : DEFAULT_BG,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat',
-                }}
+                className="w-full h-full relative bg-black"
              >
+                {/* Background Layer - Using img tag for better html-to-image support */}
+                {data.backgroundUrl ? (
+                  <img 
+                    src={data.backgroundUrl} 
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    alt="Background"
+                    crossOrigin="anonymous"
+                  />
+                ) : (
+                  <div 
+                    className="absolute inset-0 w-full h-full pointer-events-none"
+                    style={{ background: DEFAULT_BG }}
+                  />
+                )}
+
                 {/* Fallback content if no background is uploaded */}
                 {!data.backgroundUrl && (
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
