@@ -17,6 +17,8 @@ interface PassData {
   userNickname: string;
   userSubtitle: string;
   qrUrl: string;
+  qrType: 'url' | 'image';
+  qrImageUrl: string | null;
   avatarUrl: string | null;
   backgroundUrl: string | null;
   cardPositionX: number;
@@ -30,6 +32,8 @@ const INITIAL_DATA: PassData = {
   userNickname: "Rebecca",
   userSubtitle: "AI/web3公益技术顾问",
   qrUrl: "https://herstory.framer.ai/",
+  qrType: 'url',
+  qrImageUrl: null,
   avatarUrl: null,
   backgroundUrl: null,
   cardPositionX: 87, // Percentage
@@ -55,6 +59,10 @@ const TRANSLATIONS = {
     nickname: "昵称",
     subtitleDesc: "副标题 / 描述",
     qrCode: "二维码",
+    qrMode: "模式",
+    modeUrl: "链接生成",
+    modeImage: "上传图片",
+    uploadQrTip: "点击上传二维码图片",
     targetUrl: "目标链接",
     layoutAdjustment: "布局调整",
     resetLayout: "重置布局",
@@ -89,6 +97,10 @@ const TRANSLATIONS = {
     nickname: "Nickname",
     subtitleDesc: "Subtitle / Description",
     qrCode: "QR Code",
+    qrMode: "Mode",
+    modeUrl: "Link URL",
+    modeImage: "Custom Image",
+    uploadQrTip: "Click to upload QR image",
     targetUrl: "Target URL",
     layoutAdjustment: "Layout Adjustment",
     resetLayout: "Reset Layout",
@@ -164,6 +176,14 @@ export default function PassGenerator() {
     }
   }, []);
 
+  const onDropQr = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setData(prev => ({ ...prev, qrImageUrl: url }));
+    }
+  }, []);
+
   const { getRootProps: getAvatarRootProps, getInputProps: getAvatarInputProps } = useDropzone({
     onDrop: onDropAvatar,
     accept: { 'image/*': [] as string[] },
@@ -172,6 +192,12 @@ export default function PassGenerator() {
 
   const { getRootProps: getBgRootProps, getInputProps: getBgInputProps } = useDropzone({
     onDrop: onDropBackground,
+    accept: { 'image/*': [] as string[] },
+    multiple: false
+  } as any);
+
+  const { getRootProps: getQrRootProps, getInputProps: getQrInputProps } = useDropzone({
+    onDrop: onDropQr,
     accept: { 'image/*': [] as string[] },
     multiple: false
   } as any);
@@ -327,15 +353,55 @@ export default function PassGenerator() {
           <h2 className="text-sm font-semibold text-slate-900 uppercase tracking-wider flex items-center gap-2">
             <QrCode className="w-4 h-4" /> {t.qrCode}
           </h2>
-          <div>
-            <label className="text-xs font-medium text-slate-500 mb-1 block">{t.targetUrl}</label>
-            <input 
-              type="text" 
-              value={data.qrUrl}
-              onChange={(e) => setData(prev => ({ ...prev, qrUrl: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            />
+          
+          {/* Mode Toggle */}
+          <div className="flex bg-slate-100 p-1 rounded-lg">
+            <button
+              onClick={() => setData(prev => ({ ...prev, qrType: 'url' }))}
+              className={cn(
+                "flex-1 py-1.5 text-xs font-medium rounded-md transition-all",
+                data.qrType === 'url' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              )}
+            >
+              {t.modeUrl}
+            </button>
+            <button
+              onClick={() => setData(prev => ({ ...prev, qrType: 'image' }))}
+              className={cn(
+                "flex-1 py-1.5 text-xs font-medium rounded-md transition-all",
+                data.qrType === 'image' ? "bg-white text-indigo-600 shadow-sm" : "text-slate-500 hover:text-slate-700"
+              )}
+            >
+              {t.modeImage}
+            </button>
           </div>
+
+          {data.qrType === 'url' ? (
+            <div>
+              <label className="text-xs font-medium text-slate-500 mb-1 block">{t.targetUrl}</label>
+              <input 
+                type="text" 
+                value={data.qrUrl}
+                onChange={(e) => setData(prev => ({ ...prev, qrUrl: e.target.value }))}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+            </div>
+          ) : (
+            <div {...getQrRootProps()} className="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50 transition-colors group relative overflow-hidden">
+              <input {...getQrInputProps()} />
+              {data.qrImageUrl ? (
+                <div className="relative z-10">
+                   <img src={data.qrImageUrl} alt="QR" className="w-20 h-20 mx-auto object-contain mb-2 rounded-md bg-white shadow-sm" />
+                   <p className="text-xs text-indigo-600 font-medium">{t.clickToUpload}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-2 text-slate-500 group-hover:text-indigo-600">
+                  <QrCode className="w-6 h-6" />
+                  <span className="text-xs font-medium">{t.uploadQrTip}</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Positioning */}
@@ -556,21 +622,25 @@ function TicketCard({ data, t }: { data: PassData, t: any }) {
         <p className="font-serif text-[10px] font-bold tracking-widest text-slate-500 text-center uppercase leading-tight whitespace-pre-line">
           {t.scanToJoin}
         </p>
-        <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100">
-          <QRCodeSVG 
-            value={data.qrUrl} 
-            size={100}
-            level="H"
-            fgColor="#1a103c"
-            imageSettings={{
-              src: NINO_LOGO,
-              x: undefined,
-              y: undefined,
-              height: 20,
-              width: 30,
-              excavate: true,
-            }}
-          />
+        <div className="bg-white p-2 rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+          {data.qrType === 'image' && data.qrImageUrl ? (
+            <img src={data.qrImageUrl} alt="QR Code" className="w-[100px] h-[100px] object-cover" />
+          ) : (
+            <QRCodeSVG 
+              value={data.qrUrl} 
+              size={100}
+              level="H"
+              fgColor="#1a103c"
+              imageSettings={{
+                src: NINO_LOGO,
+                x: undefined,
+                y: undefined,
+                height: 20,
+                width: 30,
+                excavate: true,
+              }}
+            />
+          )}
         </div>
       </div>
 
