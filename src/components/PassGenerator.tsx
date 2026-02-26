@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Download, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle } from 'lucide-react';
+import { Upload, Download, RefreshCcw, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PassData {
@@ -31,7 +31,7 @@ const SOCIAL_HASHTAGS = "#WomenlnWeb3 #WomenWeb3Wave";
 const TRANSLATIONS = {
   zh: {
     title: "通行证生成器",
-    subtitle: "自定义您的 Solidity Bootcamp 入场通行证。",
+    subtitle: "自定义您的 Solidity Bootcamp 入场通行证。\n开启区块链宇宙探索之旅。",
     userInfo: "用户信息",
     profilePhoto: "头像",
     clickToUpload: "点击上传",
@@ -55,7 +55,7 @@ const TRANSLATIONS = {
   },
   en: {
     title: "Pass Generator",
-    subtitle: "Customize your Solidity Bootcamp onboard pass.",
+    subtitle: "Customize your Solidity Bootcamp onboard pass.\nStart your blockchain universe exploration journey.",
     userInfo: "User Info",
     profilePhoto: "Profile Photo",
     clickToUpload: "Click to upload",
@@ -168,13 +168,13 @@ export default function PassGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col md:flex-row">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-slate-900 font-sans flex flex-col md:flex-row overflow-hidden">
       {/* Sidebar Controls */}
-      <div className="w-full md:w-[400px] bg-white border-r border-slate-200 p-6 flex flex-col gap-8 overflow-y-auto h-screen shadow-xl z-10">
+      <div className="w-full md:w-[400px] bg-white/95 backdrop-blur-md border-r border-white/10 p-6 flex flex-col gap-8 overflow-y-auto h-screen shadow-2xl z-10 relative">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-2 font-serif">{t.title}</h1>
-            <p className="text-sm text-slate-500">{t.subtitle}</p>
+            <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent mb-2 font-serif uppercase tracking-tighter">{t.title}</h1>
+            <p className="text-sm text-slate-500 whitespace-pre-line leading-relaxed font-medium">{t.subtitle}</p>
           </div>
           <button 
             onClick={toggleLang}
@@ -308,8 +308,11 @@ export default function PassGenerator() {
       </div>
 
       {/* Preview Area */}
-      <div className="flex-1 bg-slate-100 overflow-auto flex items-center justify-center p-8">
-        <div className="relative shadow-2xl overflow-hidden bg-black" style={{ width: '800px', height: '600px' }}>
+      <div className="flex-1 overflow-auto flex items-center justify-center p-8 relative z-10">
+        {/* Cosmic background effect for the preview area container */}
+        <div className="absolute inset-0 bg-[url('/bg.jpg')] bg-cover bg-center opacity-20 blur-3xl pointer-events-none"></div>
+
+        <div className="relative shadow-2xl overflow-hidden bg-black ring-8 ring-white/10 rounded-xl z-10" style={{ width: '800px', height: '600px' }}>
              {/* This is the capture area */}
              <div 
                 ref={previewRef}
