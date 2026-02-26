@@ -32,9 +32,9 @@ const INITIAL_DATA: PassData = {
   qrUrl: "https://herstory.framer.ai/",
   avatarUrl: null,
   backgroundUrl: null,
-  cardPositionX: 88, // Percentage
+  cardPositionX: 87, // Percentage
   cardPositionY: 100, // Percentage
-  cardScale: 0.7,
+  cardScale: 0.6,
 };
 
 const SOCIAL_HASHTAGS = "#WomenlnWeb3 #WomenWeb3Wave";
@@ -134,7 +134,8 @@ export default function PassGenerator() {
     if (previewRef.current) {
       setIsDownloading(true);
       try {
-        const dataUrl = await toPng(previewRef.current, { cacheBust: true, pixelRatio: 2 });
+        // Base size is 800x600. pixelRatio: 5 results in 4000x3000 output.
+        const dataUrl = await toPng(previewRef.current, { cacheBust: true, pixelRatio: 5 });
         const link = document.createElement('a');
         link.download = `solidity-bootcamp-pass-${data.userNickname}.png`;
         link.href = dataUrl;
@@ -460,9 +461,10 @@ export default function PassGenerator() {
                 ref={previewRef}
                 className="w-full h-full relative"
                 style={{
-                  background: data.backgroundUrl ? `url(${data.backgroundUrl})` : DEFAULT_BG,
+                  backgroundImage: data.backgroundUrl ? `url(${data.backgroundUrl})` : DEFAULT_BG,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
                 }}
              >
                 {/* Fallback content if no background is uploaded */}
