@@ -28,13 +28,13 @@ const INITIAL_DATA: PassData = {
   userType: "FEATURED GUEST",
   userIntro: "AI Edgelab founder",
   userNickname: "Rebecca",
-  userSubtitle: "AI/web3+公益技术顾问",
-  qrUrl: "https://example.com/join",
+  userSubtitle: "AI/web3公益技术顾问",
+  qrUrl: "https://herstory.framer.ai/",
   avatarUrl: null,
   backgroundUrl: null,
-  cardPositionX: 50, // Percentage
-  cardPositionY: 80, // Percentage
-  cardScale: 1,
+  cardPositionX: 100, // Percentage
+  cardPositionY: 88, // Percentage
+  cardScale: 0.7,
 };
 
 const SOCIAL_HASHTAGS = "#WomenlnWeb3 #WomenWeb3Wave";
