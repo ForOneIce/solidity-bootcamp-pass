@@ -1,0 +1,5 @@
+{
+  "name": "Solidity Bootcamp Pass Generator",
+  "description": "A tool to generate custom onboard passes for the Solidity Bootcamp, featuring customizable avatars, text, and QR codes with high-quality download support.",
+  "requestFramePermissions": []
+}
