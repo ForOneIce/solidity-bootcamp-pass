@@ -2,7 +2,7 @@ import React, { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { QRCodeSVG } from 'qrcode.react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Download, RefreshCcw, Image as ImageIcon, Type, QrCode, User, Settings, Share2, Copy, Twitter, Instagram, ExternalLink, Languages } from 'lucide-react';
+import { Upload, Download, RefreshCcw, Image as ImageIcon, Type, QrCode, User, Settings, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 // Default placeholder image for background (simulating the space theme)
@@ -27,7 +27,7 @@ interface PassData {
 }
 
 const INITIAL_DATA: PassData = {
-  userType: "FEATURED GUEST",
+  userType: "ONBOARD MEMBERSHIP",
   userIntro: "AI Edgelab founder",
   userNickname: "Rebecca",
   userSubtitle: "AI/web3公益技术顾问",
@@ -36,7 +36,7 @@ const INITIAL_DATA: PassData = {
   qrImageUrl: null,
   avatarUrl: null,
   backgroundUrl: null,
-  cardPositionX: 87, // Percentage
+  cardPositionX: 88, // Percentage
   cardPositionY: 100, // Percentage
   cardScale: 0.6,
 };
@@ -80,7 +80,8 @@ const TRANSLATIONS = {
     uploadPlaceholderTitle: "Solidity\nBootcamp",
     uploadPlaceholderDesc: "上传原始海报以获得最佳效果",
     shareAlert: "文案已复制！正在打开",
-    defaultShareText: `来看看我的 Herstory Solidity Bootcamp 入场通行证！🚀\n\n${SOCIAL_HASHTAGS}`
+    defaultShareText: `来看看我的 Herstory Solidity Bootcamp 入场通行证！🚀\n\n${SOCIAL_HASHTAGS}`,
+    browserWarning: "建议使用 Chrome 浏览器以获得最佳效果，其他浏览器可能导致图片生成异常。"
   },
   en: {
     title: "Pass Generator",
@@ -118,7 +119,8 @@ const TRANSLATIONS = {
     uploadPlaceholderTitle: "Solidity\nBootcamp",
     uploadPlaceholderDesc: "Upload the original poster for best results",
     shareAlert: "Caption copied! Opening",
-    defaultShareText: `Check out my onboard pass for the Solidity Bootcamp! 🚀\n\n${SOCIAL_HASHTAGS}`
+    defaultShareText: `Check out my onboard pass for the Solidity Bootcamp! 🚀\n\n${SOCIAL_HASHTAGS}`,
+    browserWarning: "Google Chrome is recommended. Other browsers may cause image generation issues."
   }
 };
 
@@ -263,6 +265,12 @@ export default function PassGenerator() {
             <Languages className="w-3 h-3" />
             {lang === 'zh' ? 'EN' : '中文'}
           </button>
+        </div>
+
+        {/* Browser Warning */}
+        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5 text-amber-600" />
+          <p>{t.browserWarning}</p>
         </div>
 
         {/* Background Upload */}
