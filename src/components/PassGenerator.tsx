@@ -32,8 +32,8 @@ const INITIAL_DATA: PassData = {
   qrUrl: "https://herstory.framer.ai/",
   avatarUrl: null,
   backgroundUrl: null,
-  cardPositionX: 100, // Percentage
-  cardPositionY: 88, // Percentage
+  cardPositionX: 88, // Percentage
+  cardPositionY: 100, // Percentage
   cardScale: 0.7,
 };
 
