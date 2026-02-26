@@ -61,6 +61,43 @@ A customizable web application for generating onboard passes for Solidity Bootca
     -   On mobile, use the "System Share" button to send the image directly.
 5.  **Download**: Click "Download Poster" to save the image to your device.
 
+## Deployment to GitHub Pages
+
+This project can be easily deployed to GitHub Pages.
+
+1.  **Update `vite.config.ts`**:
+    Ensure `base: './'` is set in your `vite.config.ts` file (already configured).
+
+2.  **Build the project**:
+    ```bash
+    npm run build
+    ```
+
+3.  **Deploy**:
+    -   Push the contents of the `dist` folder to a `gh-pages` branch.
+    -   Alternatively, use a GitHub Action to build and deploy automatically.
+
+    **Manual Deployment Example:**
+    ```bash
+    # Build the project
+    npm run build
+
+    # Navigate to the build output directory
+    cd dist
+
+    # Initialize a new git repository
+    git init
+    git checkout -b main
+    git add -A
+    git commit -m 'deploy'
+
+    # Push to the gh-pages branch of your repository
+    # Replace <USERNAME> and <REPO> with your details
+    git push -f git@github.com:<USERNAME>/<REPO>.git main:gh-pages
+
+    cd -
+    ```
+
 ## License
 
 MIT
