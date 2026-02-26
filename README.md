@@ -1,20 +1,60 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Solidity Bootcamp Pass Generator
 
-# Run and deploy your AI Studio app
+A React-based tool designed to generate custom onboard passes for the Solidity Bootcamp. Users can upload their avatar, customize their information, and download a personalized pass image for social sharing.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/51c1417b-f35e-49bf-9ae2-d4a2415b087c
+- **Customizable User Info**:
+  - Upload avatar and background images via drag & drop.
+  - Edit user type, intro/title, nickname, and subtitle.
+  - Generate a QR code linking to a specific target URL.
 
-## Run Locally
+- **Layout Adjustment**:
+  - Fine-tune the vertical and horizontal position of the pass card.
+  - Adjust the scale of the card to fit different background images.
 
-**Prerequisites:**  Node.js
+- **Multi-language Support**:
+  - Toggle between **Chinese (Default)** and **English**.
+  - Interface text and default sharing captions automatically adapt to the selected language.
 
+- **Social Sharing**:
+  - One-click copy for sharing captions with relevant hashtags (`#WomenlnWeb3`, `#WomenWeb3Wave`).
+  - Direct links to share on **X (Twitter)**, **Instagram**, and **Xiaohongshu**.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- **High-Quality Export**:
+  - Download the generated pass as a high-resolution PNG image.
+
+## Tech Stack
+
+- **Framework**: React + Vite
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **Image Processing**: html-to-image
+- **QR Code**: qrcode.react
+- **File Upload**: react-dropzone
+
+## Getting Started
+
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Build for production**:
+   ```bash
+   npm run build
+   ```
+
+## Usage
+
+1. **Upload Background**: Drag and drop or click to upload the official Solidity Bootcamp poster as the background.
+2. **Upload Avatar**: Upload your profile picture.
+3. **Fill Info**: Enter your details (Name, Title, etc.).
+4. **Adjust Layout**: Use the sliders to position the card perfectly over the background.
+5. **Download**: Click "Download Poster" to save your pass.
+6. **Share**: Use the social buttons to copy the caption and share your pass on social media.
