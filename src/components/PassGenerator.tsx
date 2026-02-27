@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from 'react';
 import { toPng } from 'html-to-image';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Download, RefreshCcw, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle } from 'lucide-react';
+import { Upload, Download, RefreshCcw, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle, Globe, Compass, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PassData {
@@ -17,9 +17,9 @@ interface PassData {
 
 const INITIAL_DATA: PassData = {
   userType: "ONBOARD MEMBERSHIP",
-  userIntro: "AI Edgelab founder",
-  userNickname: "Rebecca",
-  userSubtitle: "AI/web3公益技术顾问",
+  userIntro: "HerSolidity 6.5 期学员",
+  userNickname: "",
+  userSubtitle: "",
   avatarUrl: null,
   cardPositionX: 88, // Percentage
   cardPositionY: 100, // Percentage
@@ -32,20 +32,23 @@ const TRANSLATIONS = {
   zh: {
     title: "通行证生成器",
     subtitle: "自定义您的 Solidity Bootcamp 入场通行证。\n开启区块链宇宙探索之旅。",
-    userInfo: "用户信息",
+    userInfo: "挑战者信息",
     profilePhoto: "头像",
-    clickToUpload: "点击上传",
+    clickToUpload: "点击虚线圆圈上传头像",
     userType: "用户类型",
-    introTitle: "介绍 / 头衔",
+    introTitle: "身份 / 头衔",
     nickname: "昵称",
-    subtitleDesc: "副标题 / 描述",
+    nicknamePlaceholder: "请输入您的昵称，中英文都可以",
+    subtitleDesc: "自我介绍",
+    subtitlePlaceholder: "请用一句话介绍下自己吧",
+    fillRequired: "请填写昵称和自我介绍",
     shareSocial: "分享到社交媒体",
     captionLabel: "文案 (分享时自动复制)",
     shareX: "X / Twitter",
     shareInsta: "Instagram",
     shareXhs: "小红书",
     downloadNote: "注意：请先下载图片，以便在发布时附上。",
-    downloadPoster: "下载海报",
+    downloadPoster: "下载通行证卡片",
     scanToJoin: "扫码加入",
     uploadPlaceholderTitle: "Solidity\nBootcamp",
     uploadPlaceholderDesc: "上传原始海报以获得最佳效果",
@@ -56,20 +59,23 @@ const TRANSLATIONS = {
   en: {
     title: "Pass Generator",
     subtitle: "Customize your Solidity Bootcamp onboard pass.\nStart your blockchain universe exploration journey.",
-    userInfo: "User Info",
+    userInfo: "Challenger Info",
     profilePhoto: "Profile Photo",
-    clickToUpload: "Click to upload",
+    clickToUpload: "Click dashed circle to upload",
     userType: "User Type",
-    introTitle: "Intro / Title",
+    introTitle: "Identity / Title",
     nickname: "Nickname",
-    subtitleDesc: "Subtitle / Description",
+    nicknamePlaceholder: "Enter your nickname (English/Chinese)",
+    subtitleDesc: "Self Introduction",
+    subtitlePlaceholder: "Introduce yourself in one sentence",
+    fillRequired: "Please fill in Nickname and Self Introduction",
     shareSocial: "Share to Social",
     captionLabel: "Caption (Auto-copied on share)",
     shareX: "X / Twitter",
     shareInsta: "Instagram",
     shareXhs: "Xiaohongshu",
     downloadNote: "Note: Download the image first to attach it to your post.",
-    downloadPoster: "Download Poster",
+    downloadPoster: "Download Pass Card",
     scanToJoin: "Scan QR Code\nto Join",
     uploadPlaceholderTitle: "Solidity\nBootcamp",
     uploadPlaceholderDesc: "Upload the original poster for best results",
@@ -100,6 +106,11 @@ export default function PassGenerator() {
   };
 
   const handleDownload = useCallback(async () => {
+    if (!data.userNickname.trim() || !data.userSubtitle.trim()) {
+      alert(t.fillRequired);
+      return;
+    }
+
     if (previewRef.current) {
       setIsDownloading(true);
       try {
@@ -139,6 +150,11 @@ export default function PassGenerator() {
   } as any);
 
   const handleShare = async (platform: 'x' | 'instagram' | 'xiaohongshu') => {
+    if (!data.userNickname.trim() || !data.userSubtitle.trim()) {
+      alert(t.fillRequired);
+      return;
+    }
+
     // 1. Auto-download the image first
     await handleDownload();
 
@@ -228,21 +244,27 @@ export default function PassGenerator() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">{t.nickname}</label>
+              <label className="text-xs font-medium text-slate-500 mb-1 block">
+                {t.nickname} <span className="text-red-500">*</span>
+              </label>
               <input 
                 type="text" 
                 value={data.userNickname}
                 onChange={(e) => setData(prev => ({ ...prev, userNickname: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder={t.nicknamePlaceholder}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-300"
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-slate-500 mb-1 block">{t.subtitleDesc}</label>
+              <label className="text-xs font-medium text-slate-500 mb-1 block">
+                {t.subtitleDesc} <span className="text-red-500">*</span>
+              </label>
               <input 
                 type="text" 
                 value={data.userSubtitle}
                 onChange={(e) => setData(prev => ({ ...prev, userSubtitle: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                placeholder={t.subtitlePlaceholder}
+                className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 placeholder:text-slate-300"
               />
             </div>
           </div>
@@ -311,6 +333,90 @@ export default function PassGenerator() {
       <div className="flex-1 overflow-auto flex items-center justify-center p-8 relative z-10">
         {/* Cosmic background effect for the preview area container */}
         <div className="absolute inset-0 bg-[url('/bg.jpg')] bg-cover bg-center opacity-20 blur-3xl pointer-events-none"></div>
+
+        {/* Top Right: Floating Action Buttons */}
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-4">
+          {/* Rocket: Learning Guide */}
+          <a 
+            href="https://foroneice.github.io/web3-solidity-guide-cn/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-orange-500/50">
+              <Rocket className="w-6 h-6 text-orange-300" />
+            </div>
+            {/* Tooltip */}
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+              查看Solidity中文学习指南
+            </div>
+          </a>
+
+          {/* Compass: Challenge Calendar */}
+          <a 
+            href="https://www.web3compass.xyz/challenge-calendar" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-cyan-500/50">
+              <Compass className="w-6 h-6 text-cyan-300" />
+            </div>
+            {/* Tooltip */}
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+              解锁30天 Solidity 挑战日历
+            </div>
+          </a>
+
+          {/* Globe: Herstory */}
+          <a 
+            href="https://herstory.framer.ai/" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-indigo-500/50">
+              <Globe className="w-6 h-6 text-indigo-300" />
+            </div>
+            {/* Tooltip */}
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+              版权所有 © 2026 Herstory
+            </div>
+          </a>
+        </div>
+
+        {/* Bottom Right: Credits */}
+        <div className="fixed bottom-6 right-6 z-50 flex gap-4">
+          {/* Design by Roxy */}
+          <a 
+            href="https://mp.weixin.qq.com/s/04xF5hlwrXjyrEJ2vttPOA" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-pink-500/50 flex items-center justify-center w-12 h-12">
+              <span className="text-xl" role="img" aria-label="astronaut">👩‍🚀</span>
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+              Hi! I'm Designer Roxy.
+            </div>
+          </a>
+
+          {/* Developed by Ice */}
+          <a 
+            href="https://github.com/ForOneIce" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="group relative"
+          >
+            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-blue-500/50 flex items-center justify-center w-12 h-12">
+              <span className="text-xl" role="img" aria-label="astronaut">👨‍🚀</span>
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+              Hi~ I'm Dev Ice.
+            </div>
+          </a>
+        </div>
 
         <div className="relative shadow-2xl overflow-hidden bg-black ring-8 ring-white/10 rounded-xl z-10" style={{ width: '800px', height: '600px' }}>
              {/* This is the capture area */}
@@ -385,10 +491,10 @@ function TicketCard({ data, t }: { data: PassData, t: any }) {
             {data.userIntro}
           </p>
           <h2 className="font-serif font-black text-[#0f172a] text-5xl tracking-tight leading-tight">
-            {data.userNickname}
+            {data.userNickname || "Bala"}
           </h2>
           <p className="font-sans text-slate-500 text-xs font-bold tracking-widest uppercase mt-2">
-            {data.userSubtitle}
+            {data.userSubtitle || "Herstory女性社区发起人"}
           </p>
         </div>
       </div>

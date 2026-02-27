@@ -6,3 +6,13 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
+
+/* Hide default cursor to use custom one */
+body {
+  cursor: none;
+}
+
+/* Ensure interactive elements still show pointer if needed, or keep 'none' for full immersion */
+a, button, input, textarea, label {
+  cursor: none; /* Keep custom cursor visible */
+}
