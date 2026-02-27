@@ -160,7 +160,7 @@ export default function PassGenerator() {
         setIsDownloading(false);
       }
     }
-  }, [data.userNickname, t.fillRequired]);
+  }, [data, t.fillRequired]);
 
   const onDropAvatar = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
