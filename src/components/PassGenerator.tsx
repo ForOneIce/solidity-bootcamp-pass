@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { toPng } from 'html-to-image';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Download, RefreshCcw, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle, Globe, Compass, Rocket } from 'lucide-react';
@@ -93,8 +93,35 @@ export default function PassGenerator() {
   const previewRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [shareText, setShareText] = useState(TRANSLATIONS['zh'].defaultShareText);
+  const [containerScale, setContainerScale] = useState(1);
+  const [isMobile, setIsMobile] = useState(false);
 
   const t = TRANSLATIONS[lang];
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        const width = window.innerWidth;
+        const mobile = width < 1024; // lg breakpoint
+        setIsMobile(mobile);
+
+        const padding = 32; // 16px padding on each side
+        const targetWidth = 800;
+        // On mobile, we scale the card (600px wide) instead of the poster (800px)
+        const targetBase = mobile ? 600 : 800;
+        const availableWidth = width - padding;
+        // Calculate scale, max 1
+        const newScale = Math.min(1, availableWidth / targetBase);
+        setContainerScale(newScale);
+      }
+    };
+
+    // Initial calculation
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleLang = () => {
     const newLang = lang === 'zh' ? 'en' : 'zh';
@@ -133,7 +160,7 @@ export default function PassGenerator() {
         setIsDownloading(false);
       }
     }
-  }, [data.userNickname]);
+  }, [data.userNickname, t.fillRequired]);
 
   const onDropAvatar = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -184,9 +211,9 @@ export default function PassGenerator() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-slate-900 font-sans flex flex-col md:flex-row overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#302b63] to-[#24243e] text-slate-900 font-sans flex flex-col lg:flex-row overflow-x-hidden">
       {/* Sidebar Controls */}
-      <div className="w-full md:w-[400px] bg-white/95 backdrop-blur-md border-r border-white/10 p-6 flex flex-col gap-8 overflow-y-auto h-screen shadow-2xl z-10 relative">
+      <div className="w-full lg:w-[400px] bg-white/95 backdrop-blur-md border-b lg:border-r border-white/10 p-6 flex flex-col gap-8 lg:h-screen lg:overflow-y-auto shadow-2xl z-20 relative shrink-0">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-black bg-gradient-to-r from-indigo-600 to-pink-500 bg-clip-text text-transparent mb-2 font-serif uppercase tracking-tighter">{t.title}</h1>
@@ -215,7 +242,7 @@ export default function PassGenerator() {
           
           {/* Avatar Upload */}
           <div className="flex items-center gap-4">
-            <div {...getAvatarRootProps()} className="w-16 h-16 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center cursor-pointer hover:border-indigo-500 overflow-hidden relative group">
+            <div {...getAvatarRootProps()} className="w-16 h-16 rounded-full bg-slate-100 border-2 border-dashed border-slate-300 flex items-center justify-center cursor-pointer hover:border-indigo-500 overflow-hidden relative group shrink-0">
               <input {...getAvatarInputProps()} />
               {data.avatarUrl ? (
                 <img src={data.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
@@ -330,12 +357,12 @@ export default function PassGenerator() {
       </div>
 
       {/* Preview Area */}
-      <div className="flex-1 overflow-auto flex items-center justify-center p-8 relative z-10">
+      <div className="flex-1 flex items-center justify-center p-4 lg:p-8 relative z-10 min-h-[400px] lg:min-h-0">
         {/* Cosmic background effect for the preview area container */}
         <div className="absolute inset-0 bg-[url('/bg.jpg')] bg-cover bg-center opacity-20 blur-3xl pointer-events-none"></div>
 
-        {/* Top Right: Floating Action Buttons */}
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-4">
+        {/* Floating Action Buttons */}
+        <div className={`absolute top-4 right-4 lg:top-6 lg:right-6 z-50 flex items-center gap-2 lg:gap-4 ${isMobile ? 'flex-row' : ''}`}>
           {/* Rocket: Learning Guide */}
           <a 
             href="https://foroneice.github.io/web3-solidity-guide-cn/" 
@@ -343,11 +370,11 @@ export default function PassGenerator() {
             rel="noopener noreferrer"
             className="group relative"
           >
-            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-orange-500/50">
-              <Rocket className="w-6 h-6 text-orange-300" />
+            <div className="bg-white/10 backdrop-blur-md p-2 lg:p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-orange-500/50">
+              <Rocket className="w-5 h-5 lg:w-6 lg:h-6 text-orange-300" />
             </div>
             {/* Tooltip */}
-            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10 z-50">
               查看Solidity中文学习指南
             </div>
           </a>
@@ -359,11 +386,11 @@ export default function PassGenerator() {
             rel="noopener noreferrer"
             className="group relative"
           >
-            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-cyan-500/50">
-              <Compass className="w-6 h-6 text-cyan-300" />
+            <div className="bg-white/10 backdrop-blur-md p-2 lg:p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-cyan-500/50">
+              <Compass className="w-5 h-5 lg:w-6 lg:h-6 text-cyan-300" />
             </div>
             {/* Tooltip */}
-            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10 z-50">
               解锁30天 Solidity 挑战日历
             </div>
           </a>
@@ -375,18 +402,18 @@ export default function PassGenerator() {
             rel="noopener noreferrer"
             className="group relative"
           >
-            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-indigo-500/50">
-              <Globe className="w-6 h-6 text-indigo-300" />
+            <div className="bg-white/10 backdrop-blur-md p-2 lg:p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-indigo-500/50">
+              <Globe className="w-5 h-5 lg:w-6 lg:h-6 text-indigo-300" />
             </div>
             {/* Tooltip */}
-            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+            <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10 z-50">
               版权所有 © 2026 Herstory
             </div>
           </a>
         </div>
 
-        {/* Bottom Right: Credits */}
-        <div className="fixed bottom-6 right-6 z-50 flex gap-4">
+        {/* Credits */}
+        <div className={`absolute bottom-4 right-4 lg:bottom-6 lg:right-6 z-50 flex gap-2 lg:gap-4 ${isMobile ? 'flex-row' : ''}`}>
           {/* Design by Roxy */}
           <a 
             href="https://mp.weixin.qq.com/s/04xF5hlwrXjyrEJ2vttPOA" 
@@ -394,10 +421,10 @@ export default function PassGenerator() {
             rel="noopener noreferrer"
             className="group relative"
           >
-            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-pink-500/50 flex items-center justify-center w-12 h-12">
-              <span className="text-xl" role="img" aria-label="astronaut">👩‍🚀</span>
+            <div className="bg-white/10 backdrop-blur-md p-2 lg:p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-pink-500/50 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12">
+              <span className="text-lg lg:text-xl" role="img" aria-label="astronaut">👩‍🚀</span>
             </div>
-            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10 z-50">
               Hi! I'm Designer Roxy.
             </div>
           </a>
@@ -409,41 +436,66 @@ export default function PassGenerator() {
             rel="noopener noreferrer"
             className="group relative"
           >
-            <div className="bg-white/10 backdrop-blur-md p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-blue-500/50 flex items-center justify-center w-12 h-12">
-              <span className="text-xl" role="img" aria-label="astronaut">👨‍🚀</span>
+            <div className="bg-white/10 backdrop-blur-md p-2 lg:p-3 rounded-full border border-white/20 shadow-lg hover:bg-white/20 transition-all hover:scale-110 hover:shadow-blue-500/50 flex items-center justify-center w-10 h-10 lg:w-12 lg:h-12">
+              <span className="text-lg lg:text-xl" role="img" aria-label="astronaut">👨‍🚀</span>
             </div>
-            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10">
+            <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10 z-50">
               Hi~ I'm Dev Ice.
             </div>
           </a>
         </div>
 
-        <div className="relative shadow-2xl overflow-hidden bg-black ring-8 ring-white/10 rounded-xl z-10" style={{ width: '800px', height: '600px' }}>
-             {/* This is the capture area */}
-             <div 
-                ref={previewRef}
-                className="w-full h-full relative bg-black"
-             >
-                {/* Background Layer - Using img tag for better html-to-image support */}
-                <img 
-                  src="/bg.jpg" 
-                  className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-                  alt="Background"
-                  crossOrigin="anonymous"
-                />
+        {/* MOBILE VIEW: Only show the TicketCard */}
+        {isMobile && (
+          <div 
+            className="relative z-20 transition-transform duration-300 ease-out origin-center"
+            style={{ 
+              transform: `scale(${containerScale})`,
+              width: '600px', 
+              height: '220px' 
+            }}
+          >
+            <TicketCard data={data} t={t} />
+          </div>
+        )}
 
-                {/* The Card */}
-                <div 
-                  className="absolute transform -translate-x-1/2 -translate-y-1/2 origin-center"
-                  style={{
-                    left: `${data.cardPositionX}%`,
-                    top: `${data.cardPositionY}%`,
-                    transform: `translate(-50%, -50%) scale(${data.cardScale})`,
-                  }}
-                >
-                  <TicketCard data={data} t={t} />
-                </div>
-             </div>
+        {/* DESKTOP VIEW / GENERATION TARGET: Full Poster */}
+        {/* On mobile, we hide this visually but keep it in DOM for generation */}
+        <div 
+          className={`relative z-10 transition-transform duration-300 ease-out origin-center ${isMobile ? 'fixed -left-[9999px] pointer-events-none opacity-0' : ''}`}
+          style={{ 
+            transform: `scale(${isMobile ? 1 : containerScale})`, // Reset scale on mobile since it's hidden/offscreen
+            width: '800px', 
+            height: '600px' 
+          }}
+        >
+          <div className="relative shadow-2xl overflow-hidden bg-black ring-8 ring-white/10 rounded-xl w-full h-full">
+               {/* This is the capture area */}
+               <div 
+                  ref={previewRef}
+                  className="w-full h-full relative bg-black"
+               >
+                  {/* Background Layer - Using img tag for better html-to-image support */}
+                  <img 
+                    src="/bg.jpg" 
+                    className="absolute inset-0 w-full h-full object-cover pointer-events-none"
+                    alt="Background"
+                    crossOrigin="anonymous"
+                  />
+
+                  {/* The Card */}
+                  <div 
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 origin-center"
+                    style={{
+                      left: `${data.cardPositionX}%`,
+                      top: `${data.cardPositionY}%`,
+                      transform: `translate(-50%, -50%) scale(${data.cardScale})`,
+                    }}
+                  >
+                    <TicketCard data={data} t={t} />
+                  </div>
+               </div>
+          </div>
         </div>
       </div>
     </div>

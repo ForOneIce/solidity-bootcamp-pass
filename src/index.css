@@ -7,12 +7,14 @@
   --font-serif: "Playfair Display", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
 }
 
-/* Hide default cursor to use custom one */
-body {
-  cursor: none;
-}
+/* Hide default cursor to use custom one ONLY on devices with a fine pointer (mouse) */
+@media (hover: hover) and (pointer: fine) {
+  body {
+    cursor: none;
+  }
 
-/* Ensure interactive elements still show pointer if needed, or keep 'none' for full immersion */
-a, button, input, textarea, label {
-  cursor: none; /* Keep custom cursor visible */
+  /* Ensure interactive elements still show pointer if needed, or keep 'none' for full immersion */
+  a, button, input, textarea, label {
+    cursor: none; /* Keep custom cursor visible */
+  }
 }
