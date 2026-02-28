@@ -154,6 +154,9 @@ export default function PassGenerator() {
         link.download = `solidity-bootcamp-pass-${data.userNickname}.png`;
         link.href = dataUrl;
         link.click();
+
+        // Trigger music playback after successful download/share
+        window.dispatchEvent(new Event('play-music'));
       } catch (err) {
         console.error('Failed to download image', err);
       } finally {

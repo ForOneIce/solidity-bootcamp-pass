@@ -52,41 +52,17 @@ export default function MusicPlayer() {
       .catch(err => console.error('Failed to load lyrics', err));
   }, []);
 
-  // Attempt autoplay on mount
+  // Listen for custom event to start playing
   useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const tryPlay = async () => {
-      try {
-        await audio.play();
-        setIsPlaying(true);
-      } catch (err) {
-        // Autoplay blocked by browser, wait for user interaction
-        console.log('Autoplay blocked, waiting for user interaction');
+    const handlePlayMusic = () => {
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().catch(err => console.log('Playback failed:', err));
       }
     };
 
-    // We try to play immediately. If it fails, we attach a one-time click listener to the document
-    tryPlay();
-
-    const handleFirstInteraction = () => {
-      if (!hasInteracted) {
-        setHasInteracted(true);
-        if (!isPlaying) {
-          tryPlay();
-        }
-      }
-    };
-
-    document.addEventListener('click', handleFirstInteraction, { once: true });
-    document.addEventListener('touchstart', handleFirstInteraction, { once: true });
-
-    return () => {
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('touchstart', handleFirstInteraction);
-    };
-  }, [hasInteracted, isPlaying]);
+    window.addEventListener('play-music', handlePlayMusic);
+    return () => window.removeEventListener('play-music', handlePlayMusic);
+  }, []);
 
   // Handle time update for lyrics
   const handleTimeUpdate = () => {
@@ -134,7 +110,6 @@ export default function MusicPlayer() {
       } else {
         audioRef.current.play();
       }
-      setIsPlaying(!isPlaying);
     }
   };
 
