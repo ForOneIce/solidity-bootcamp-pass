@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import PassGenerator from './components/PassGenerator';
 import LoadingScreen from './components/LoadingScreen';
 import CustomCursor from './components/CustomCursor';
+import MusicPlayer from './components/MusicPlayer';
 
 export default function App() {
   const [loading, setLoading] = useState(true);
@@ -24,6 +25,7 @@ export default function App() {
   return (
     <>
       <CustomCursor />
+      <MusicPlayer />
       {loading && <LoadingScreen />}
       {/* We keep the main app mounted but hidden or behind the loader to ensure assets load */}
       <div className={loading ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100 transition-opacity duration-700'}>
