@@ -384,7 +384,7 @@ export default function PassGenerator() {
 
           {/* Compass: Challenge Calendar */}
           <a 
-            href="https://www.web3compass.xyz/challenge-calendar" 
+            href="https://www.web3compass.xyz/30-days-of-solidity/dashboard" 
             target="_blank" 
             rel="noopener noreferrer"
             className="group relative"
@@ -394,7 +394,7 @@ export default function PassGenerator() {
             </div>
             {/* Tooltip */}
             <div className="absolute top-full right-0 mt-2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none backdrop-blur-sm border border-white/10 z-50">
-              解锁30天 Solidity 挑战日历
+              解锁30天 Solidity 挑战
             </div>
           </a>
 
