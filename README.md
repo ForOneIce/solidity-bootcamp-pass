@@ -1,84 +1,46 @@
-# Solidity Bootcamp Pass Generator
+# Solidity Bootcamp 通行证生成器 & 学习中心
 
-A React-based tool designed to generate custom onboard passes for the Solidity Bootcamp. Users can upload their avatar, customize their information, and download a personalized pass image for social sharing.
+一款为 Solidity Bootcamp 打造的基于 React 的交互式 Web 应用。它允许用户生成自定义的入营通行证，追踪 30 天的学习计划，并通过内置音乐和彩蛋沉浸式体验 Web3 学习之旅。
 
-## Features
+## ✨ 功能特性
 
-- **Customizable User Info**:
-  - Upload avatar and background images via drag & drop.
-  - Edit user type, intro/title, nickname, and subtitle.
-  - Generate a QR code linking to a specific target URL.
+- **🎟️ 自定义通行证生成器**:
+  - 支持拖拽上传头像。
+  - 自定义用户简介、昵称。
+  - 导出高分辨率 PNG 图片。
 
-- **Layout Adjustment**:
-  - Fine-tune the vertical and horizontal position of the pass card.
-  - Adjust the scale of the card to fit different background images.
+- **📅 互动学习日历**:
+  - **日历与月历视图**：追踪 30 天的 Solidity Bootcamp 学习日程（2026年2月28日 - 4月5日）。
+  - **难度指示器**：使用彩色小圆点直观显示课程难度（紫色代表初级，蓝青色代表中级，黄色代表高级）。
+  - **贴纸系统**：月历视图中为特殊事件添加了可爱的贴纸（💖 嘉宾分享，⭐ 答疑时间，✨ 黑客松准备，🏆 Demo Day）。
+  - **手账美学**：日历详情页带有和纸胶带和大型贴纸，营造温馨的手工质感。
+  - **隐藏彩蛋**：手绘宇航员翻页动画，随着日期的快速翻动会产生连贯的动画效果！
 
-- **Multi-language Support**:
-  - Toggle between **Chinese (Default)** and **English**.
-  - Interface text and default sharing captions automatically adapt to the selected language.
+- **🎵 沉浸式音乐体验**:
+  - 内置音乐播放器，收录原创主题曲《我们的故事》。
+  - **智能播放**：当用户成功生成并下载/分享通行证后，音乐会自动响起，确保创作过程的专注。
+  - 玻璃拟态 (Glassmorphism) 风格的播放器控制面板。
 
-- **Social Sharing**:
-  - One-click copy for sharing captions with relevant hashtags (`#WomenlnWeb3`, `#WomenWeb3Wave`).
-  - Direct links to share on **X (Twitter)**, **Instagram**, and **Xiaohongshu**.
+- **🌐 多语言与社交分享**:
+  - 支持 **中文（默认）** 和 **英文** 切换。
+  - 一键复制带有相关话题标签（`#WomenlnWeb3`, `#WomenWeb3Wave`）的分享文案。
+  - 提供直达 **X (Twitter)**、**Instagram** 和 **小红书** 的分享链接。
 
-- **High-Quality Export**:
-  - Download the generated pass as a high-resolution PNG image.
+- **🔗 快捷资源**:
+  - 悬浮操作按钮，可快速访问 Solidity 中文学习指南和 Web3 Compass 挑战看板。
 
-## Tech Stack
+## 🛠️ 技术栈
 
-- **Framework**: React + Vite
-- **Styling**: Tailwind CSS
-- **Icons**: Lucide React
-- **Image Processing**: html-to-image
-- **QR Code**: qrcode.react
-- **File Upload**: react-dropzone
+- **框架**: React 18 + Vite
+- **样式**: Tailwind CSS (结合玻璃拟态效果)
+- **动画**: Motion (Framer Motion)
+- **图标**: Lucide React
+- **图像处理**: html-to-image
+- **二维码**: qrcode.react
+- **文件上传**: react-dropzone
 
-## Getting Started
+## 💡 使用指南
 
-1. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-2. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-
-3. **Build for production**:
-   ```bash
-   npm run build
-   ```
-
-## Deployment
-
-### Vercel (Recommended)
-
-This project is fully compatible with Vercel. You can deploy it with zero configuration.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-repo%2Fsolidity-bootcamp-pass)
-
-1. Push your code to a Git repository (GitHub, GitLab, Bitbucket).
-2. Import the project into Vercel.
-3. Vercel will automatically detect Vite and configure the build settings:
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-4. Click **Deploy**.
-
-### Manual Deployment
-
-Since this is a static site, you can build it locally and host the `dist` folder on any static hosting service (Netlify, GitHub Pages, Cloudflare Pages, etc.).
-
-```bash
-npm run build
-# The 'dist' folder is now ready to be deployed
-```
-
-## Usage
-
-1. **Upload Background**: Drag and drop or click to upload the official Solidity Bootcamp poster as the background.
-2. **Upload Avatar**: Upload your profile picture.
-3. **Fill Info**: Enter your details (Name, Title, etc.).
-4. **Adjust Layout**: Use the sliders to position the card perfectly over the background.
-5. **Download**: Click "Download Poster" to save your pass.
-6. **Share**: Use the social buttons to copy the caption and share your pass on social media.
+1. **创建通行证**: 上传你的头像，填写昵称和简介。
+2. **下载与分享**: 点击“下载通行证卡片”保存图片。这也会触发背景音乐的播放！
+3. **探索日历**: 点击右上角的紫色日历图标查看 30 天学习计划。
