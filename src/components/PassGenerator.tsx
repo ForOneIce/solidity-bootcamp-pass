@@ -3,6 +3,7 @@ import { toPng } from 'html-to-image';
 import { useDropzone } from 'react-dropzone';
 import { Upload, Download, RefreshCcw, Type, User, Share2, Copy, Twitter, Instagram, ExternalLink, Languages, AlertTriangle, Globe, Compass, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import LearningCalendar from './LearningCalendar';
 
 interface PassData {
   userType: string;
@@ -366,6 +367,10 @@ export default function PassGenerator() {
 
         {/* Floating Action Buttons */}
         <div className={`absolute top-4 right-4 lg:top-6 lg:right-6 z-50 flex items-center gap-2 lg:gap-4 ${isMobile ? 'flex-row' : ''}`}>
+          
+          {/* Calendar Widget */}
+          <LearningCalendar />
+
           {/* Rocket: Learning Guide */}
           <a 
             href="https://foroneice.github.io/web3-solidity-guide-cn/" 
